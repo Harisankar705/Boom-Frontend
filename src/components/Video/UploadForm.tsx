@@ -20,7 +20,6 @@ const UploadForm: React.FC = () => {
     if (files && files.length > 0) {
       const file = files[0];
       
-      // Check file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
         setError('File size exceeds 10MB limit');
         return;
@@ -159,6 +158,7 @@ const UploadForm: React.FC = () => {
               type="file"
               id="videoFile"
               accept="video/mp4"
+              name='videoFile'
               onChange={handleFileChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FB3A26] focus:border-transparent"
             />

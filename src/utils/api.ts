@@ -1,33 +1,40 @@
 import axios from 'axios';
 
-// Create an axios instance with default config
 export const api = axios.create({
-  baseURL: 'http://localhost:1111', // Backend API URL
+  baseURL: 'http://localhost:1111',
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to include auth token in all requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    console.log("TOKEN",token)
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+       config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('Request config:', config);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
 );
 
-// Add a response interceptor to handle common errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    // Handle 401 Unauthorized errors
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/auth';
+      delete api.defaults.headers.common['Authorization'];
+      // Optionally redirect to login page
+      // window.location.href = '/login';
     }
     return Promise.reject(error);
   }

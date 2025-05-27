@@ -17,12 +17,19 @@ const VideoPage: React.FC = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+  const fetchVideo = async () => {
     if (videoId) {
-      const videoData = getVideoById(videoId);
+      setLoading(true);
+      const videoData = await getVideoById(videoId);
       setVideo(videoData);
       setLoading(false);
     }
-  }, [videoId, getVideoById]);
+  };
+
+  fetchVideo();
+}, [videoId, getVideoById]);
+      console.log("VIDEODATA",video)
+
   
   const handlePurchase = async () => {
     if (!video) return;
@@ -115,7 +122,7 @@ const VideoPage: React.FC = () => {
           <div className="flex flex-wrap justify-between items-start gap-4">
             <div className="flex-grow">
               <h1 className="text-2xl font-bold text-gray-900">{video.title}</h1>
-              <p className="text-gray-600 mt-1">@{video.creator.username}</p>
+              <p className="text-gray-600 mt-1">@{video.creator.username||"User"}</p>
             </div>
             
             {canWatch && (

@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, DollarSign } from 'lucide-react';
 import { useVideo, Video } from '../../context/VideoContext';
 import { useWallet } from '../../context/WalletContext';
 import { useAuth } from '../../context/AuthContext';
@@ -8,11 +7,12 @@ import ShortVideoCard from './ShortVideoCard';
 import LongVideoCard from './LongVideoCard';
 
 const VideoFeed: React.FC = () => {
-  const { videos, loading, error, fetchVideos } = useVideo();
+const { videos = [], loading, error, fetchVideos } = useVideo();
   const { isAuthenticated } = useAuth();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
-
+  console.log('ISAUTHENTCATED',isAuthenticated)
+console.log('videos',videos)
   useEffect(() => {
     if (isAuthenticated) {
       fetchVideos();
@@ -77,7 +77,6 @@ const VideoFeed: React.FC = () => {
     );
   }
 
-  // Paginate videos
   const displayedVideos = videos.slice(0, page * 3);
 
   return (

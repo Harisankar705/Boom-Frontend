@@ -60,7 +60,7 @@ const ShortVideoCard: React.FC<ShortVideoCardProps> = ({ video }) => {
       }
     }
   };
-
+console.log("RER",video.fileUrl)
   return (
     <div className="relative bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
       <Link to={`/video/${video._id}`}>

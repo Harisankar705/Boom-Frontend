@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './context/AuthContext';
@@ -12,7 +11,8 @@ import VideoPage from './pages/VideoPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
-const GOOGLE_CLIENT_ID = 'your-google-client-id';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+console.log(GOOGLE_CLIENT_ID)
 
 function App() {
   return (
@@ -43,7 +43,7 @@ function App() {
                     } 
                   />
                 </Route>
-                <Route path="*" element={<Navigate to="/\" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </VideoProvider>
           </WalletProvider>

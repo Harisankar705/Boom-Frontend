@@ -70,7 +70,8 @@ export const VideoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     try {
       const response = await api.get('/videos/feed');
-      setVideos(response.data.videos);
+      console.log("RESPONSE",response)
+      setVideos(response.data );
     } catch (err) {
       setError('Failed to fetch videos');
       console.error('Error fetching videos:', err);
@@ -82,7 +83,8 @@ export const VideoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getVideoById = async (id: string) => {
     try {
       const response = await api.get(`/videos/${id}`);
-      return response.data.video;
+      console.log(response)
+      return response.data.videos
     } catch (error) {
       console.error('Error fetching video:', error);
       return undefined;

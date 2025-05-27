@@ -35,37 +35,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
-    if (token) {
-      fetchUserData();
-    } else {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        try {
+          const response = await api.get('/auth/me');
+          setUser(response.data.user);
+        } catch (error) {
+          console.error('Failed to verify token:', error);
+          
+          localStorage.removeItem('token');
+          delete api.defaults.headers.common['Authorization'];
+        }
+      }
       setLoading(false);
-    }
-  }, []);
+    };
 
-  const fetchUserData = async () => {
-    try {
-      const response = await api.get('/auth/me');
-      setUser(response.data.user);
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+    initializeAuth();
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
+      console.log('res',response)
+  
       localStorage.setItem('token', token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
       setUser(user);
     } catch (error) {
       console.error('Login failed:', error);
-      throw new Error('Invalid credentials');
+      throw error; 
     }
   };
 
@@ -73,23 +80,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await api.post('/auth/register', { username, email, password });
       const { token, user } = response.data;
+      
       localStorage.setItem('token', token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
       setUser(user);
     } catch (error) {
       console.error('Registration failed:', error);
-      throw new Error('Registration failed');
+      throw error;
     }
   };
 
   const googleLogin = async (token: string) => {
     try {
       const response = await api.post('/auth/google', { token });
-      const { accessToken, user } = response.data;
+      const { token: accessToken, user } = response.data;
+      console.log('loginresponse',response.data)
       localStorage.setItem('token', accessToken);
+      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      
       setUser(user);
     } catch (error) {
       console.error('Google login failed:', error);
-      throw new Error('Google login failed');
+      throw error;
     }
   };
 

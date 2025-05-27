@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
   onSwitch: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
+  const navigate=useNavigate()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,23 +25,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
       await login(email, password);
     } catch (err) {
       setError('Invalid email or password');
+      console.log(err)
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (response) => {
-      try {
-        await googleLogin(response.access_token);
-      } catch (error) {
-        setError('Google login failed');
-      }
-    },
-    onError: () => {
-      setError('Google login failed');
-    }
-  });
+ const handleGoogleSuccess=async(credentialResponse:{credential?:string})=>{
+  if(!credentialResponse.credential)
+  {
+    setError("Google login failed!")
+    return
+  }
+  try {
+    await googleLogin(credentialResponse.credential)
+  } catch (error) {
+    setError("Google login failed!")
+    console.error(error)
+
+  }
+ }
   
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg max-w-md w-full">
@@ -97,18 +102,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => handleGoogleLogin()}
-          className="w-full mt-4 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB3A26] flex items-center justify-center"
-        >
-          <img 
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-            alt="Google" 
-            className="w-5 h-5 mr-2"
-          />
-          Sign in with Google
-        </button>
+        <GoogleLogin onSuccess={handleGoogleSuccess}
+        onError={()=>setError("Google login failed!")}/>
       </form>
       
       <p className="mt-4 text-center text-sm text-gray-600">

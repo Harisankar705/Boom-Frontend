@@ -23,6 +23,7 @@ const GiftButton: React.FC<GiftButtonProps> = ({ creatorId, videoId }) => {
     setIsLoading(true);
     try {
       const result = await sendGift(creatorId, videoId, selectedAmount);
+      console.log('gift result')
       if (result) {
         setSuccess(true);
         setTimeout(() => {
