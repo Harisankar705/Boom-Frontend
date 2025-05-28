@@ -74,7 +74,6 @@ const UploadForm: React.FC = () => {
       await uploadVideo(formData);
       navigate('/');
     } catch (err) {
-      console.error('Upload failed:', err);
       setError('Failed to upload video. Please try again.');
     } finally {
       setIsLoading(false);

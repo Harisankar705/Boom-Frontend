@@ -25,7 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
       await login(email, password);
     } catch (err) {
       setError('Invalid email or password');
-      console.log(err)
     } finally {
       setLoading(false);
     }
@@ -41,7 +40,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
     await googleLogin(credentialResponse.credential)
   } catch (error) {
     setError("Google login failed!")
-    console.error(error)
 
   }
  }

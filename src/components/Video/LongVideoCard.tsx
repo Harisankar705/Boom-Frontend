@@ -26,7 +26,6 @@ const LongVideoCard: React.FC<LongVideoCardProps> = ({ video }) => {
   }
   
   const result = await purchaseVideo(video._id, video.price);
-  console.log("RESULT",result)
   
   if (result.success) {
     await getBalance()

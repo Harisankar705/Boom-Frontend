@@ -31,9 +31,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-// Storage utility functions with fallbacks
 const storageUtils = {
-  // Check if localStorage is available and accessible
   isStorageAvailable(): boolean {
     try {
       const test = '__storage_test__';
@@ -41,12 +39,10 @@ const storageUtils = {
       localStorage.removeItem(test);
       return true;
     } catch (e) {
-      console.warn('localStorage is not available:', e.message);
       return false;
     }
   },
 
-  // In-memory storage fallback
   memoryStorage: {} as Record<string, string>,
 
   setItem(key: string, value: string): void {
@@ -57,7 +53,6 @@ const storageUtils = {
         this.memoryStorage[key] = value;
       }
     } catch (error) {
-      console.warn('Failed to set storage item:', error);
       this.memoryStorage[key] = value;
     }
   },
@@ -70,7 +65,6 @@ const storageUtils = {
         return this.memoryStorage[key] || null;
       }
     } catch (error) {
-      console.warn('Failed to get storage item:', error);
       return this.memoryStorage[key] || null;
     }
   },
@@ -83,7 +77,6 @@ const storageUtils = {
         delete this.memoryStorage[key];
       }
     } catch (error) {
-      console.warn('Failed to remove storage item:', error);
       delete this.memoryStorage[key];
     }
   }
@@ -94,33 +87,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const setAuthToken = (token: string) => {
-    console.log('Setting auth token:', token.substring(0, 20) + '...');
     storageUtils.setItem('token', token);
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   };
 
   const clearAuthToken = () => {
-    console.log('Clearing auth token');
     storageUtils.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('🔄 Initializing authentication...');
-      console.log('📦 Storage available:', storageUtils.isStorageAvailable());
       
       try {
         const token = storageUtils.getItem('token');
-        console.log('📦 Token from storage:', token ? 'Found' : 'Not found');
         
         if (!token) {
-          console.log('❌ No token found, skipping verification');
           setLoading(false);
           return;
         }
 
-        console.log('🔍 Verifying token with backend...');
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         
         const response = await api.get('/auth/me');
@@ -206,7 +192,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       const response = await api.post('/auth/google', { token });
-      console.log('✅ Google login successful:', response.data);
       
       const { token: accessToken, user } = response.data;
       
@@ -229,14 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  // Debug current state
-  console.log('🔍 Auth State:', { 
-    hasUser: !!user, 
-    isAuthenticated: !!user && !loading, 
-    loading,
-    username: user?.username,
-    storageAvailable: storageUtils.isStorageAvailable()
-  });
+ 
 
   return (
     <AuthContext.Provider value={{ 

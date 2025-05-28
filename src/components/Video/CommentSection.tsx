@@ -23,7 +23,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ videoId }) => {
       const fetchedComments = await getComments(videoId);
       setComments(fetchedComments);
     } catch (error) {
-      console.error('Error fetching comments:', error);
     } finally {
       setLoading(false);
     }
@@ -39,7 +38,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ videoId }) => {
       setComment('');
       fetchComments();
     } catch (error) {
-      console.error('Error adding comment:', error);
+      alert("Faile to add comment")
     }
   };
   

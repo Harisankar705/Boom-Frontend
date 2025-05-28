@@ -23,7 +23,6 @@ const GiftButton: React.FC<GiftButtonProps> = ({ creatorId, videoId }) => {
   setIsLoading(true);
   try {
     const result = await sendGift(creatorId, videoId, selectedAmount);
-    console.log('gift result', result);
 
     if (result.success) {
       setSuccess(true);
@@ -36,7 +35,6 @@ const GiftButton: React.FC<GiftButtonProps> = ({ creatorId, videoId }) => {
       alert(result.reason || 'Failed to send gift');
     }
   } catch (error) {
-    console.error('Unexpected error sending gift:', error);
     alert('Something went wrong. Please try again.');
   } finally {
     setIsLoading(false);

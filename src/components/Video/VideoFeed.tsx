@@ -11,8 +11,6 @@ const { videos = [], loading, error, fetchVideos } = useVideo();
   const { isAuthenticated } = useAuth();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
-  console.log('ISAUTHENTCATED',isAuthenticated)
-console.log('videos',videos)
   useEffect(() => {
     if (isAuthenticated) {
       fetchVideos();

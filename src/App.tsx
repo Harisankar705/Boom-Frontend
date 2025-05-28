@@ -12,7 +12,6 @@ import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
-console.log(GOOGLE_CLIENT_ID)
 
 function App() {
   return (
