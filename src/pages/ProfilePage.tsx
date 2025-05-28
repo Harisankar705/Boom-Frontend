@@ -42,7 +42,6 @@ const ProfilePage: React.FC = () => {
             
             {user.purchases && user.purchases.length > 0 ? (
               <div>
-                {/* Purchases list would go here in a real app */}
                 <p className="text-gray-600">You have {user.purchases.length} purchased videos.</p>
               </div>
             ) : (
