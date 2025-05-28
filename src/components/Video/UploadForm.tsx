@@ -34,7 +34,6 @@ const UploadForm: React.FC = () => {
     e.preventDefault();
     setError('');
     
-    // Validate inputs
     if (!title.trim()) {
       setError('Title is required');
       return;

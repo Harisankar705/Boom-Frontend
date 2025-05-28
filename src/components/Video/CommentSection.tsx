@@ -37,7 +37,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ videoId }) => {
     try {
       await addComment(videoId, comment);
       setComment('');
-      // Refresh comments
       fetchComments();
     } catch (error) {
       console.error('Error adding comment:', error);

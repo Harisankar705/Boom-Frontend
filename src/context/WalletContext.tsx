@@ -4,14 +4,18 @@ import { useAuth } from './AuthContext';
 
 interface WalletContextType {
   balance: number;
-  purchaseVideo: (videoId: string, price: number) => Promise<boolean>;
-  sendGift: (creatorId: string, videoId: string, amount: number) => Promise<boolean>;
+  purchaseVideo: (videoId: string, price: number) =>  Promise<{ success: boolean; message?: string }>
+  sendGift: (creatorId: string,videoId: string,amount: number) => Promise<{ success: boolean; reason?: string }>;
+  reloadBalance: () => Promise<void>;
+  getBalance:()=>Promise<void>
 }
 
 const WalletContext = createContext<WalletContextType>({
   balance: 0,
-  purchaseVideo: async () => false,
-  sendGift: async () => false,
+  purchaseVideo:  async () => ({ success: false, message: 'Not initialized' }),
+  sendGift: async () => ({ success: false, reason: 'Not initialized' }),
+  reloadBalance: async () => {},
+   getBalance:async()=>{}
 });
 
 export const useWallet = () => useContext(WalletContext);
@@ -26,34 +30,59 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [user]);
 
-  const purchaseVideo = async (videoId: string, price: number): Promise<boolean> => {
+  const purchaseVideo = async (videoId: string, price: number): Promise<{ success: boolean; message?: string }> => {
+  try {
+    const response = await api.post('/videos/purchase', { videoId });
+    setBalance(response.data.newBalance);
+    return { success: true };
+  } catch (error: any) {
+    const message = error?.response?.data?.message || 'Purchase failed';
+    return { success: false, message };
+  }
+};
+
+  const sendGift = async (creatorId: string,videoId: string,amount: number): Promise<{ success: boolean; reason?: string }> => {
     try {
-      const response = await api.post('/videos/purchase', { videoId });
+      const response = await api.post('/gifts/send', { creatorId, videoId, amount });
+      console.log("GIFT RESPONSE:", response.data);
       setBalance(response.data.newBalance);
-      return true;
-    } catch (error) {
-      console.error('Purchase failed:', error);
-      return false;
+      return { success: true };
+    } catch (error: any) {
+      console.error('Gift sending failed:', error);
+      const message = error?.response?.data?.message || 'Unknown error';
+      return { success: false, reason: message };
     }
   };
 
-  const sendGift = async (creatorId: string, videoId: string, amount: number): Promise<boolean> => {
+   const reloadBalance = async () => {
     try {
-      const response = await api.post('/gifts/send', { creatorId, videoId, amount });
-      setBalance(response.data.newBalance);
-      return true;
-    } catch (error) {
-      console.error('Gift sending failed:', error);
-      return false;
+      const response = await api.get('/auth/me');
+      console.log('fetchbalanace',response)
+      setBalance(response.data.user.wallet);
+    } catch (err) {
+      console.error("Failed to reload wallet balance:", err);
+    }
+  };
+  const getBalance = async () => {
+    try {
+      const response = await api.get('/videos/balance');  
+      console.log('getBalance',response)
+      setBalance(response.data.balance);
+    } catch (err) {
+      console.error("Failed to reload wallet balance:", err);
     }
   };
 
   return (
-    <WalletContext.Provider value={{ 
-      balance, 
-      purchaseVideo,
-      sendGift
-    }}>
+    <WalletContext.Provider
+      value={{
+        balance,
+        purchaseVideo,
+        sendGift,
+        reloadBalance,
+        getBalance
+      }}
+    >
       {children}
     </WalletContext.Provider>
   );

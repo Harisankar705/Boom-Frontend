@@ -17,30 +17,32 @@ const GiftButton: React.FC<GiftButtonProps> = ({ creatorId, videoId }) => {
   
   const giftAmounts = [10, 50, 100, 200, 500];
   
-  const handleGift = async () => {
-    if (selectedAmount <= 0) return;
-    
-    setIsLoading(true);
-    try {
-      const result = await sendGift(creatorId, videoId, selectedAmount);
-      console.log('gift result')
-      if (result) {
-        setSuccess(true);
-        setTimeout(() => {
-          setIsGiftModalOpen(false);
-          setSuccess(false);
-          setSelectedAmount(0);
-        }, 2000);
-      } else {
-        alert('Insufficient balance to send this gift');
-      }
-    } catch (error) {
-      console.error('Error sending gift:', error);
-      alert('Failed to send gift. Please try again.');
-    } finally {
-      setIsLoading(false);
+ const handleGift = async () => {
+  if (selectedAmount <= 0) return;
+
+  setIsLoading(true);
+  try {
+    const result = await sendGift(creatorId, videoId, selectedAmount);
+    console.log('gift result', result);
+
+    if (result.success) {
+      setSuccess(true);
+      setTimeout(() => {
+        setIsGiftModalOpen(false);
+        setSuccess(false);
+        setSelectedAmount(0);
+      }, 2000);
+    } else {
+      alert(result.reason || 'Failed to send gift');
     }
-  };
+  } catch (error) {
+    console.error('Unexpected error sending gift:', error);
+    alert('Something went wrong. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   
   return (
     <>

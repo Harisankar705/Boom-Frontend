@@ -91,24 +91,25 @@ export const VideoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const addComment = async (videoId: string, text: string) => {
+  const addComment = async (videoId: string, comment: string) => {
     try {
-      await api.post(`/comments/${videoId}`, { text });
+      await api.post(`/videos/createcomment`, { comment,videoId});
     } catch (err) {
       console.error('Error adding comment:', err);
       throw new Error('Failed to add comment');
     }
   };
 
-  const getComments = async (videoId: string): Promise<Comment[]> => {
-    try {
-      const response = await api.get(`/comments/${videoId}`);
-      return response.data.comments;
-    } catch (err) {
-      console.error('Error fetching comments:', err);
-      return [];
-    }
-  };
+    const getComments = async (videoId: string): Promise<Comment[]> => {
+      try {
+        const response = await api.get(`/videos/comments/${videoId}`);
+        console.log("COMMENTS",response)
+        return response.data
+      } catch (err) {
+        console.error('Error fetching comments:', err);
+        return [];
+      }
+    };
 
   const uploadVideo = async (videoData: FormData) => {
     try {

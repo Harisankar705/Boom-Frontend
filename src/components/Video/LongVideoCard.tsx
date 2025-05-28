@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Play, DollarSign } from 'lucide-react';
 import { Video } from '../../context/VideoContext';
@@ -8,31 +8,35 @@ import { useAuth } from '../../context/AuthContext';
 interface LongVideoCardProps {
   video: Video;
 }
-
 const LongVideoCard: React.FC<LongVideoCardProps> = ({ video }) => {
   const { user } = useAuth();
-  const { purchaseVideo, balance } = useWallet();
+  const { purchaseVideo, balance,getBalance} = useWallet();
   const navigate = useNavigate();
-  
+ 
+
   const isPurchased = user?.purchases?.includes(video._id);
   const canAfford = balance >= video.price;
   
   const handlePurchase = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    if (video.price === 0 || isPurchased) {
-      navigate(`/video/${video._id}`);
-      return;
-    }
-    
-    const success = await purchaseVideo(video._id, video.price);
-    
-    if (success) {
-      navigate(`/video/${video._id}`);
-    } else {
-      alert('Insufficient balance to purchase this video');
-    }
-  };
+  e.preventDefault();
+  
+  if (video.price === 0 || isPurchased) {
+    navigate(`/video/${video._id}`);
+    return;
+  }
+  
+  const result = await purchaseVideo(video._id, video.price);
+  console.log("RESULT",result)
+  
+  if (result.success) {
+    await getBalance()
+    alert('Video purchased!')
+    user?.purchases?.push(video._id);
+    navigate(`/video/${video._id}`);
+  } else {
+    alert(result.message);
+  }
+};
   
   return (
     <Link to={`/video/${video._id}`} className="block">

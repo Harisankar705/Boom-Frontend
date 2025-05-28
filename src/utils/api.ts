@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const api = axios.create({
   baseURL: 'http://localhost:1111',
-  timeout: 10000,
+  timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -33,8 +33,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
-      // Optionally redirect to login page
-      // window.location.href = '/login';
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
